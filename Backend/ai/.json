@@ -1,0 +1,143 @@
+[
+  {
+    "question": "hello",
+    "answer": "Hello! How can I help you today?"
+  },
+  {
+    "question": "hi",
+    "answer": "Hi there! What would you like to ask?"
+  },
+  {
+    "question": "hey",
+    "answer": "Hey! I'm here to help you with phishing-related questions."
+  },
+  {
+    "question": "good morning",
+    "answer": "Good morning! How can I assist you today?"
+  },
+  {
+    "question": "good afternoon",
+    "answer": "Good afternoon! Do you have a cybersecurity question for me?"
+  },
+  {
+    "question": "good evening",
+    "answer": "Good evening! I'm ready to help. Ask me anything!"
+  },
+  {
+    "question": "how are you?",
+    "answer": "I'm doing great, thank you! How can I assist you with phishing protection today?"
+  },
+  {
+    "question": "what can you do?",
+    "answer": "I can help detect phishing URLs and teach you how to stay safe online. Just ask me a question!"
+  },
+  
+  {
+    "question": "What planet is closest to the sun?",
+    "answer": "Mercury"
+  },
+  {
+    "question": "What is the largest ocean on Earth?",
+    "answer": "Pacific Ocean"
+  },
+  {
+    "question": "What is the square root of 64?",
+    "answer": "8"
+  },
+  {
+    "question": "What does 'AI' stand for?",
+    "answer": "Artificial Intelligence"
+  },
+  {
+    "question": "'phishing' typically aim to steal?",
+    "answer": "Personal information"
+  },
+  {
+    "question": "2FA stand for?",
+    "answer": "Two-Factor Authentication"
+  },
+  {
+    "question": "'URL' stand for?",
+    "answer": "Uniform Resource Locator"
+  },
+  {
+    "question": "H2O commonly known as?",
+    "answer": "Water"
+  },
+  {
+    "question": "What is 12 squared?",
+    "answer": "144"
+  },
+  {
+    "question": "part of the cell contains DNA?",
+    "answer": "Nucleus"
+  },
+  {
+    "question": "wrote 'Romeo and Juliet'?",
+    "answer": "William Shakespeare"
+  },
+  {
+    "question": "capital of france?",
+    "answer": "Paris"
+  },
+  {
+    "question": "firewall used for?",
+    "answer": "Network security"
+  },
+  {
+    "question": "the value of pi (approx)?",
+    "answer": "3.14"
+  },
+  {
+    "question": "15% of 200?",
+    "answer": "30"
+  },
+  {
+    "question": "Which protocol is more secure: HTTP or HTTPS?",
+    "answer": "HTTPS"
+  },
+  {
+    "question": "year did the Titanic sink?",
+    "answer": "1912"
+  },
+  {
+    "question": "apple's voice assistant?",
+    "answer": "Siri"
+  },
+  {
+    "question": "Who founded Microsoft?",
+    "answer": "Bill Gates"
+  },
+  {
+    "question": "What is the full form of VPN?",
+    "answer": "Virtual Private Network"
+  },
+  {
+    "question": "7 x 8",
+    "answer": "56"
+  },
+  {
+    "question": "Which planet is known as the Red Planet?",
+    "answer": "Mars"
+  },
+  {
+    "question": "Which company developed Android?",
+    "answer": "Google"
+  },
+  {
+    "question": "What gas do plants absorb from the atmosphere?",
+    "answer": "Carbon Dioxide"
+  },
+  {
+    "question": "What force keeps us on the ground?",
+    "answer": "Gravity"
+  },{
+    "question":"",
+    "answer":""
+  }
+
+
+
+
+
+]
