@@ -36,6 +36,7 @@ function Details(){
 
   return (
     <>
+    <h1>Yogalakshmi</h1>
       <form onSubmit={handleSubmit}>
         <div>
           <label>Age:
