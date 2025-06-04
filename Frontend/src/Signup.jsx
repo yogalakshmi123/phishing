@@ -25,16 +25,20 @@ function Signup() {
       return;
     }
 
-    const signupUrl = 'https://your-api-url.com/signup'; // Replace with your real endpoint
+    const signupUrl = 'http://localhost:8000/signup'; // Replace with your real endpoint
 
-    axios.post(signupUrl, {
-      username: formData.username,
+    axios.get(signupUrl, {
+      params:{
+        username: formData.username,
       email: formData.email,
       password: formData.password
+      }
     })
     .then(response => {
       console.log('Signup successful:', response.data);
       alert('Account created successfully!');
+      sessionStorage.setItem("userid", response.data.id)
+      window.location.href = "/details"
     })
     .catch(error => {
       console.error('Signup error:', error);

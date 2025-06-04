@@ -10,10 +10,10 @@ function App() {
     <>
     <BrowserRouter>
     <Routes>
-      <Route path="/" element={<Details />} />
+      <Route path="/details" element={<Details />} />
       <Route path="/Bot" element={<Chatbot />} />
-      <Route path="/Login" element={<Login />} />
-      <Route path="/Signup" element={<Signup />} />
+      <Route path="/" element={<Login />} />
+      <Route path="/signup" element={<Signup />} />
     </Routes>
     </BrowserRouter>
     </>

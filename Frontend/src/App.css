@@ -1,6 +1,6 @@
 :root {
-  --primary-color: #6a11cb;
-  --secondary-color: #2575fc;
+  --primary-color: #9d6cd1;
+  --secondary-color: #25fcd5;
   --light-color: #f8f9fa;
   --dark-color: #343a40;
   --user-message: #6a11cb;
@@ -8,7 +8,7 @@
 }
 
 body {
-  background: linear-gradient(to right, #762b8f, #0d1828);
+  background: linear-gradient(to right, #391c57, #33065c,rgb(38, 14, 3),rgb(0, 0, 0),rgb(220, 182, 189));
   font-family: 'Poppins', sans-serif;
   margin: 0;
   padding: 0;
@@ -107,7 +107,7 @@ h1 {
 }
 
 .suggestion {
-  background: #ac1f5e;
+  background: #ce7ba0;
   border: none;
   border-radius: 20px;
   padding: 8px 15px;
