@@ -25,11 +25,14 @@ function Chatbot(){
     setIsTyping(true);
 
     axios.get("http://127.0.0.1:8000/", {
-      params: { message: input }
+      params: { 
+        message: input
+      
+      }
     })
     .then((res) => {
       console.log(res)
-      setMessages(prev => [...prev, { text: res.data.message + input   + " " + res.data.reason, sender: 'ai' }]);
+      setMessages(prev => [...prev, { text: res.data.message }]);
     })
     .catch((err) => {
       console.log(err);
