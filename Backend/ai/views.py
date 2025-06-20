@@ -1,11 +1,5 @@
 from django.http import JsonResponse
 import logging
-from . import chat
-from . import phishing_datasets
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.feature_extraction.text import TfidfVectorizer
-from urllib.parse import urlparse
-import re
 from . models import Useform
 import google.generativeai as genai
 
@@ -99,5 +93,11 @@ def UpdateUser(request):
         return JsonResponse({'message': 'User updated successfully', 'id': user.id})
 
     return JsonResponse({'error': 'Only GET method allowed'}, status=405)
+
+
+def Analysis(request):
+    users = Useform.objects.all().values()  # Get all fields as dictionaries
+    return JsonResponse(list(users), safe=False)
+
 
     

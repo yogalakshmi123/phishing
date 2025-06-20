@@ -3,6 +3,7 @@ import Chatbot from "./Chatbot"
 import Details from "./Details"
 import Login from "./Login"
 import Signup from "./Signup"
+import HumanFactorCharts from "./Analysis"
 
 function App() {
   
@@ -14,6 +15,7 @@ function App() {
       <Route path="/Bot" element={<Chatbot />} />
       <Route path="/" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
+      <Route path="/Analysis" element={<HumanFactorCharts />} />
     </Routes>
     </BrowserRouter>
     </>
