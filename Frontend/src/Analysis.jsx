@@ -19,7 +19,6 @@ ChartJS.register(
   Legend
 );
 
-// Sample user data
 const data = [
   {
     id: 3,
@@ -57,7 +56,6 @@ const getRiskLevel = (age) => {
 };
 
 const HumanFactorCharts = () => {
-  // Age Distribution
   const ageChart = {
     labels: data.map((user) => user.name),
     datasets: [
@@ -69,7 +67,7 @@ const HumanFactorCharts = () => {
     ],
   };
 
-   const ageGroups = {
+  const ageGroups = {
     'Below 20': { 'High Risk': 0, 'Medium Risk': 0, 'Low Risk': 0 },
     '20-24': { 'High Risk': 0, 'Medium Risk': 0, 'Low Risk': 0 },
     '25+': { 'High Risk': 0, 'Medium Risk': 0, 'Low Risk': 0 },
@@ -86,7 +84,7 @@ const HumanFactorCharts = () => {
     }
   });
 
-   const riskChart = {
+  const riskChart = {
     labels: Object.keys(ageGroups),
     datasets: [
       {
@@ -107,10 +105,11 @@ const HumanFactorCharts = () => {
     ],
   };
 
-  // Qualification Distribution
   const qualifications = {};
+  const levels = {};
   data.forEach((user) => {
     qualifications[user.qualification] = (qualifications[user.qualification] || 0) + 1;
+    levels[user.level] = (levels[user.level] || 0) + 1;
   });
 
   const qualificationChart = {
@@ -123,12 +122,6 @@ const HumanFactorCharts = () => {
     ],
   };
 
-  // Level Distribution
-  const levels = {};
-  data.forEach((user) => {
-    levels[user.level] = (levels[user.level] || 0) + 1;
-  });
-
   const levelChart = {
     labels: Object.keys(levels),
     datasets: [
@@ -139,45 +132,99 @@ const HumanFactorCharts = () => {
     ],
   };
 
-  
+  const styles = `
+    body {
+      margin: 0;
+      background: #1e1f26;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    .dashboard {
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+      color: #ffffff;
+    }
+
+    .dashboard h2 {
+      font-size: 32px;
+      margin-bottom: 20px;
+    }
+
+    .chart-section {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+    }
+
+    .chart-card {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      padding: 20px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .chart-card h3 {
+      margin-bottom: 10px;
+      font-size: 18px;
+      font-weight: 500;
+      color: #cbd5e1;
+    }
+  `;
 
   return (
-    <div>
-      <h2  style={{color:"white"}}>Human Factor & Risk Analysis</h2>
-      <div >
-  
-        <h3  style={{color:"white"}}>Qualification Breakdown</h3>
-        <Pie data={qualificationChart} />
+    <>
+      <style>{styles}</style>
+      <div className="dashboard">
+        <h2>📊 Human Factor & Risk Analysis</h2>
 
-        <h3 style={{color:"white"}}>Skill Level Breakdown</h3>
-        <Doughnut data={levelChart} />
+        <div className="chart-section">
+          <div className="chart-card">
+            <h3>Qualification Breakdown</h3>
+            <Pie data={qualificationChart} />
+          </div>
 
-       <h3  style={{color:"white"}}>Risk Level Analysis (By Age Group)</h3>
-        <Bar
-          data={riskChart}
-          options={{
-            responsive: true,
-            plugins: {
-              legend: {
-                position: 'top',
-              },
-              tooltip: {
-                mode: 'index',
-                intersect: false,
-              },
-            },
-            scales: {
-              x: {
-                stacked: true,
-              },
-              y: {
-                stacked: true,
-              },
-            },
-          }}
-        />
+          <div className="chart-card">
+            <h3>Skill Level Breakdown</h3>
+            <Doughnut data={levelChart} />
+          </div>
+
+          <div className="chart-card" style={{ gridColumn: '1 / -1' }}>
+            <h3>Risk Level Analysis (By Age Group)</h3>
+            <Bar
+              data={riskChart}
+              options={{
+                responsive: true,
+                plugins: {
+                  legend: {
+                    position: 'top',
+                    labels: { color: '#fff' }
+                  },
+                  tooltip: {
+                    mode: 'index',
+                    intersect: false,
+                  },
+                },
+                scales: {
+                  x: {
+                    stacked: true,
+                    ticks: { color: '#fff' },
+                    grid: { color: '#333' }
+                  },
+                  y: {
+                    stacked: true,
+                    ticks: { color: '#fff' },
+                    grid: { color: '#333' }
+                  },
+                },
+              }}
+            />
+          </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
