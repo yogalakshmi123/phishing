@@ -14,7 +14,7 @@ def AI(request):
         message = request.GET.get('message', '').strip()
         genai.configure(api_key="AIzaSyCJQDpGvKX2nurvrkhliM_T4jQb1Vfu4y4")
         model = genai.GenerativeModel("gemini-1.5-flash")
-        prompt = f" Answer this question {message}"
+        prompt = f" Answer this question {message} add some emojis too in the answer"
         response = model.generate_content(prompt)
         
        

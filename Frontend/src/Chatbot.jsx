@@ -1,54 +1,61 @@
-import React, { useState, useRef, useEffect } from 'react'
-import axios from "axios"
-import { FaPaperPlane } from 'react-icons/fa'
+import React, { useState, useRef, useEffect } from 'react';
+import axios from 'axios';
+import { FaPaperPlane } from 'react-icons/fa';
+import { FiRefreshCcw } from 'react-icons/fi';
+import { FaRobot, FaUser } from 'react-icons/fa'; // AI and User icons
 
 function Chatbot() {
-  const [input, setInput] = useState("")
+  const [input, setInput] = useState('');
   const [messages, setMessages] = useState([
-    { sender: 'ai', text: "Hello! I'm your AI assistant. How can I help today?" }
-  ])
-  const [isTyping, setIsTyping] = useState(false)
-  const messagesEndRef = useRef(null)
+    { sender: 'ai', text: "Hello! I'm your AI assistant. How can I help today?" },
+  ]);
+  const [isTyping, setIsTyping] = useState(false);
+  const messagesEndRef = useRef(null);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages])
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
   const sendMessage = () => {
-    if (!input.trim()) return
-    const userMsg = { sender: 'user', text: input }
-    setMessages(prev => [...prev, userMsg])
-    setInput('')
-    setIsTyping(true)
+    if (!input.trim()) return;
+    const userMsg = { sender: 'user', text: input };
+    setMessages(prev => [...prev, userMsg]);
+    setInput('');
+    setIsTyping(true);
 
-    axios.get("http://127.0.0.1:8000/", { params: { message: input } })
+    axios
+      .get('http://127.0.0.1:8000/', { params: { message: input } })
       .then(res => {
-        setMessages(prev => [...prev, { sender: 'ai', text: res.data.message }])
+        setMessages(prev => [...prev, { sender: 'ai', text: res.data.message }]);
       })
       .catch(() => {
-        setMessages(prev => [...prev, {
-          sender: 'ai',
-          text: "Oops! Something went wrong, please try again."
-        }])
+        setMessages(prev => [
+          ...prev,
+          { sender: 'ai', text: 'Oops! Something went wrong, please try again.' },
+        ]);
       })
-      .finally(() => setIsTyping(false))
-  }
+      .finally(() => setIsTyping(false));
+  };
 
   const handleKey = e => {
-    if (e.key === 'Enter') sendMessage()
-  }
+    if (e.key === 'Enter') sendMessage();
+  };
 
   const styles = `
     body {
       margin: 0;
       padding: 0;
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
     .chat-container {
       height: 100vh;
       display: flex;
       flex-direction: column;
-      background: #f5f5f5;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+      padding: 10px;
     }
     .chat-header {
       padding: 20px;
@@ -57,6 +64,7 @@ function Chatbot() {
       font-size: 20px;
       text-align: center;
       font-weight: bold;
+      border-radius: 10px 10px 0 0;
     }
     .chat-messages {
       flex: 1;
@@ -71,17 +79,24 @@ function Chatbot() {
       padding: 12px 16px;
       border-radius: 16px;
       word-wrap: break-word;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      position: relative;
+      display: flex;
+      align-items: center;
     }
     .ai-bubble {
       align-self: flex-start;
-      background-color: white;
+      background-color: #fff;
       color: #333;
     }
     .user-bubble {
       align-self: flex-end;
       background-color: #007bff;
       color: white;
+    }
+    .bubble-icon {
+      margin-right: 8px;
+      font-size: 20px;
     }
     .typing-dots {
       display: flex;
@@ -104,8 +119,10 @@ function Chatbot() {
       display: flex;
       padding: 16px;
       gap: 10px;
-      background: white;
+      background: rgba(255, 255, 255, 0.7);
       border-top: 1px solid #ddd;
+      border-radius: 0 0 10px 10px;
+      backdrop-filter: blur(10px);
     }
     .input-section input {
       flex: 1;
@@ -114,11 +131,17 @@ function Chatbot() {
       border: 1px solid #ccc;
       font-size: 16px;
       outline: none;
+      transition: all 0.3s ease-in-out;
+      background: rgba(255, 255, 255, 0.9);
+    }
+    .input-section input:focus {
+      border-color: #007bff;
+      box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
     }
     .input-section button {
       background-color: #007bff;
       border: none;
-      padding: 0 16px;
+      padding: 10px 16px;
       border-radius: 8px;
       color: white;
       font-size: 18px;
@@ -126,79 +149,71 @@ function Chatbot() {
       display: flex;
       align-items: center;
       justify-content: center;
+      transition: all 0.3s ease-in-out;
     }
     .input-section button:hover {
       background-color: #0069d9;
     }
-      
-  `
-
-  
-
-  if(messages.length > 5){
-
-    const chatHistory = messages.map(msg => `${msg.sender}: ${msg.text}`).join("\n");
-    const loginUrl = 'http://localhost:8000/checkactivities';
-
-    axios.get(loginUrl, {
-      params: {
-        id: sessionStorage.getItem("userid"),
-        messages: chatHistory,
-      }
-    })
-      .then(response => {
-        console.log(response);
-      })
-      .catch(error => {
-        console.error('Login failed:', error);
-       
-      });
-
-console.log(chatHistory);
-
-  }
-
-
-
-
+    .input-section button:active {
+      background-color: #005cbf;
+    }
+    .reset-button {
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      background: #ff6347;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    .reset-button:hover {
+      background-color: #e55347;
+    }
+  `;
 
   return (
     <>
       <style>{styles}</style>
       <center>
-        <div className="chat-container" style={{width:"800px"}}>
-        {/* <div className="chat-header" >Welcome</div> */}
-        <div className="chat-messages" >
-          {messages.map((msg, i) => (
-            <div key={i} className={`bubble ${msg.sender === 'ai' ? 'ai-bubble' : 'user-bubble'}`}>
-              {msg.text}
-            </div>
-          ))}
-          {isTyping && (
-            <div className="typing-dots">
-              <div className="typing-dot"></div>
-              <div className="typing-dot"></div>
-              <div className="typing-dot"></div>
-            </div>
-          )}
-          <div ref={messagesEndRef} />
+        <div className="chat-container" style={{ width: '800px' }}>
+          
+          <div className="chat-messages">
+            {messages.map((msg, i) => (
+              <div key={i} className={`bubble ${msg.sender === 'ai' ? 'ai-bubble' : 'user-bubble'}`}>
+                <div className="bubble-icon">
+                  {msg.sender === 'ai' ? <FaRobot /> : <FaUser />}
+                </div>
+                <div>{msg.text}</div>
+              </div>
+            ))}
+            {isTyping && (
+              <div className="typing-dots">
+                <div className="typing-dot"></div>
+                <div className="typing-dot"></div>
+                <div className="typing-dot"></div>
+              </div>
+            )}
+            <div ref={messagesEndRef} />
+          </div>
+          <div className="input-section">
+            <input
+              type="text"
+              placeholder="Type your message..."
+              value={input}
+              onChange={e => setInput(e.target.value)}
+              onKeyDown={handleKey}
+            />
+            <button onClick={sendMessage}>
+              <FaPaperPlane />
+            </button>
+          </div>
         </div>
-        <div className="input-section">
-          <input
-            type="text"
-            placeholder="Type your message..."
-            value={input}
-            onChange={e => setInput(e.target.value)}
-            onKeyDown={handleKey}
-          />
-          <button onClick={sendMessage}>
-            <FaPaperPlane />
-          </button>
-        </div>
-      </div>
       </center>
     </>
-  )
+  );
 }
 
-export default Chatbot
+export default Chatbot;
