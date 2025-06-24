@@ -10,6 +10,9 @@ class Useform(models.Model):
     age = models.IntegerField()
     qualification = models.CharField(max_length=100)
     level = models.CharField(max_length=100)
+    fear = models.IntegerField()
+    urgency = models.IntegerField()
+    pressure = models.IntegerField()
 
     def __str__(self):
         return f"{self.name} {self.email} {self.password} {self.age} {self.qualification} {self.level}"

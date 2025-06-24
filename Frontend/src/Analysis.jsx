@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Bar, Pie, Doughnut } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -19,36 +19,47 @@ ChartJS.register(
   Legend
 );
 
-const data = [
-  {
-    id: 3,
-    name: 'Dhivya',
-    email: 'dhivya0987@gmail.com',
-    password: 'dhivya0987',
-    age: 22,
-    qualification: "Master's",
-    level: 'Beginner',
-  },
-  {
-    id: 4,
-    name: 'Ajith',
-    email: 'ajith2023@gmail.com',
-    password: 'nalu0nalu',
-    age: 25,
-    qualification: "Bachelor's",
-    level: 'Intermediate',
-  },
-  {
-    id: 5,
-    name: 'ashwin',
-    email: 'ashwin2000@gmail.com',
-    password: 'ashwin2000',
-    age: 20,
-    qualification: "Bachelor's",
-    level: 'Beginner',
-  },
-];
+// Data sample with added fear, urgency, and pressure attributes
+// const data = [
+//   {
+//     id: 3,
+//     name: 'Dhivya',
+//     email: 'dhivya0987@gmail.com',
+//     password: 'dhivya0987',
+//     age: 22,
+//     qualification: "Master's",
+//     level: 'Beginner',
+//     fear: 4, // Fear level (1-5)
+//     urgency: 3, // Urgency level (1-5)
+//     pressure: 2, // Pressure level (1-5)
+//   },
+//   {
+//     id: 4,
+//     name: 'Ajith',
+//     email: 'ajith2023@gmail.com',
+//     password: 'nalu0nalu',
+//     age: 25,
+//     qualification: "Bachelor's",
+//     level: 'Intermediate',
+//     fear: 2,
+//     urgency: 5,
+//     pressure: 4,
+//   },
+//   {
+//     id: 5,
+//     name: 'ashwin',
+//     email: 'ashwin2000@gmail.com',
+//     password: 'ashwin2000',
+//     age: 20,
+//     qualification: "Bachelor's",
+//     level: 'Beginner',
+//     fear: 3,
+//     urgency: 2,
+//     pressure: 3,
+//   },
+// ];
 
+// Function to get risk level based on age
 const getRiskLevel = (age) => {
   if (age < 21) return 'High Risk';
   if (age < 25) return 'Medium Risk';
@@ -56,34 +67,88 @@ const getRiskLevel = (age) => {
 };
 
 const HumanFactorCharts = () => {
-  const ageChart = {
-    labels: data.map((user) => user.name),
-    datasets: [
-      {
-        label: 'Age',
-        data: data.map((user) => user.age),
-        backgroundColor: '#4bc0c0',
-      },
-    ],
-  };
 
+  const [data, usersData] = useState([])
+
+  useEffect(()=>{
+    fetch("http://localhost:8000/analysis")
+    .then(res => res.json())
+    .then(data => usersData(data))
+    .catch(err => console.log(err))
+  },[])
+  // Group by Age for Risk Analysis
   const ageGroups = {
     'Below 20': { 'High Risk': 0, 'Medium Risk': 0, 'Low Risk': 0 },
     '20-24': { 'High Risk': 0, 'Medium Risk': 0, 'Low Risk': 0 },
     '25+': { 'High Risk': 0, 'Medium Risk': 0, 'Low Risk': 0 },
   };
 
+  // Group by Age for Emotional States (Fear, Urgency, Pressure)
+  const emotionLevels = {
+    'Below 20': { fear: [], urgency: [], pressure: [] },
+    '20-24': { fear: [], urgency: [], pressure: [] },
+    '25+': { fear: [], urgency: [], pressure: [] },
+  };
+
   data.forEach((user) => {
     const risk = getRiskLevel(user.age);
     if (user.age < 20) {
       ageGroups['Below 20'][risk]++;
+      emotionLevels['Below 20'].fear.push(user.fear);
+      emotionLevels['Below 20'].urgency.push(user.urgency);
+      emotionLevels['Below 20'].pressure.push(user.pressure);
     } else if (user.age < 25) {
       ageGroups['20-24'][risk]++;
+      emotionLevels['20-24'].fear.push(user.fear);
+      emotionLevels['20-24'].urgency.push(user.urgency);
+      emotionLevels['20-24'].pressure.push(user.pressure);
     } else {
       ageGroups['25+'][risk]++;
+      emotionLevels['25+'].fear.push(user.fear);
+      emotionLevels['25+'].urgency.push(user.urgency);
+      emotionLevels['25+'].pressure.push(user.pressure);
     }
   });
 
+  // Calculate average fear, urgency, and pressure for each group
+  const averageEmotionLevels = (emotionArray) => {
+    return emotionArray.reduce((sum, value) => sum + value, 0) / emotionArray.length;
+  };
+
+  const emotionCharts = {
+    fear: {
+      labels: Object.keys(emotionLevels),
+      datasets: [
+        {
+          label: 'Average Fear Level',
+          data: Object.values(emotionLevels).map(group => averageEmotionLevels(group.fear)),
+          backgroundColor: '#f94144',
+        },
+      ],
+    },
+    urgency: {
+      labels: Object.keys(emotionLevels),
+      datasets: [
+        {
+          label: 'Average Urgency Level',
+          data: Object.values(emotionLevels).map(group => averageEmotionLevels(group.urgency)),
+          backgroundColor: '#f3722c',
+        },
+      ],
+    },
+    pressure: {
+      labels: Object.keys(emotionLevels),
+      datasets: [
+        {
+          label: 'Average Pressure Level',
+          data: Object.values(emotionLevels).map(group => averageEmotionLevels(group.pressure)),
+          backgroundColor: '#43aa8b',
+        },
+      ],
+    },
+  };
+
+  // Risk Analysis by Age Groups
   const riskChart = {
     labels: Object.keys(ageGroups),
     datasets: [
@@ -105,6 +170,7 @@ const HumanFactorCharts = () => {
     ],
   };
 
+  // Qualifications and Skill Levels
   const qualifications = {};
   const levels = {};
   data.forEach((user) => {
@@ -132,6 +198,7 @@ const HumanFactorCharts = () => {
     ],
   };
 
+  // Custom Styles
   const styles = `
     body {
       margin: 0;
@@ -198,29 +265,38 @@ const HumanFactorCharts = () => {
               options={{
                 responsive: true,
                 plugins: {
-                  legend: {
-                    position: 'top',
-                    labels: { color: '#fff' }
-                  },
-                  tooltip: {
-                    mode: 'index',
-                    intersect: false,
-                  },
+                  legend: { position: 'top', labels: { color: '#fff' } },
+                  tooltip: { mode: 'index', intersect: false },
                 },
                 scales: {
                   x: {
                     stacked: true,
                     ticks: { color: '#fff' },
-                    grid: { color: '#333' }
+                    grid: { color: '#333' },
                   },
                   y: {
                     stacked: true,
                     ticks: { color: '#fff' },
-                    grid: { color: '#333' }
+                    grid: { color: '#333' },
                   },
                 },
               }}
             />
+          </div>
+
+          <div className="chart-card">
+            <h3>Average Fear Level (By Age Group)</h3>
+            <Bar data={emotionCharts.fear} />
+          </div>
+
+          <div className="chart-card">
+            <h3>Average Urgency Level (By Age Group)</h3>
+            <Bar data={emotionCharts.urgency} />
+          </div>
+
+          <div className="chart-card">
+            <h3>Average Pressure Level (By Age Group)</h3>
+            <Bar data={emotionCharts.pressure} />
           </div>
         </div>
       </div>
