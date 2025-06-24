@@ -19,45 +19,6 @@ ChartJS.register(
   Legend
 );
 
-// Data sample with added fear, urgency, and pressure attributes
-// const data = [
-//   {
-//     id: 3,
-//     name: 'Dhivya',
-//     email: 'dhivya0987@gmail.com',
-//     password: 'dhivya0987',
-//     age: 22,
-//     qualification: "Master's",
-//     level: 'Beginner',
-//     fear: 4, // Fear level (1-5)
-//     urgency: 3, // Urgency level (1-5)
-//     pressure: 2, // Pressure level (1-5)
-//   },
-//   {
-//     id: 4,
-//     name: 'Ajith',
-//     email: 'ajith2023@gmail.com',
-//     password: 'nalu0nalu',
-//     age: 25,
-//     qualification: "Bachelor's",
-//     level: 'Intermediate',
-//     fear: 2,
-//     urgency: 5,
-//     pressure: 4,
-//   },
-//   {
-//     id: 5,
-//     name: 'ashwin',
-//     email: 'ashwin2000@gmail.com',
-//     password: 'ashwin2000',
-//     age: 20,
-//     qualification: "Bachelor's",
-//     level: 'Beginner',
-//     fear: 3,
-//     urgency: 2,
-//     pressure: 3,
-//   },
-// ];
 
 // Function to get risk level based on age
 const getRiskLevel = (age) => {

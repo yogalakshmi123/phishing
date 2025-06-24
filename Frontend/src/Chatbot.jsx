@@ -165,9 +165,10 @@ console.log(chatHistory);
   return (
     <>
       <style>{styles}</style>
-      <div className="chat-container">
-        <div className="chat-header">Welcome</div>
-        <div className="chat-messages">
+      <center>
+        <div className="chat-container" style={{width:"800px"}}>
+        {/* <div className="chat-header" >Welcome</div> */}
+        <div className="chat-messages" >
           {messages.map((msg, i) => (
             <div key={i} className={`bubble ${msg.sender === 'ai' ? 'ai-bubble' : 'user-bubble'}`}>
               {msg.text}
@@ -195,6 +196,7 @@ console.log(chatHistory);
           </button>
         </div>
       </div>
+      </center>
     </>
   )
 }
