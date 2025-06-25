@@ -1,10 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
-import { FaPaperPlane } from 'react-icons/fa';
-import { FiRefreshCcw } from 'react-icons/fi';
-import { FaRobot, FaUser } from 'react-icons/fa'; // AI and User icons
+import { FaPaperPlane, FaRobot, FaUser } from 'react-icons/fa';
+import ReactMarkdown from 'react-markdown';
 
 function Chatbot() {
+  const hasSentActivityCheck = useRef(false);
+
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState([
     { sender: 'ai', text: "Hello! I'm your AI assistant. How can I help today?" },
@@ -26,15 +27,48 @@ function Chatbot() {
     axios
       .get('http://127.0.0.1:8000/', { params: { message: input } })
       .then(res => {
-        setMessages(prev => [...prev, { sender: 'ai', text: res.data.message }]);
+        typeAiMessage(res.data.message);
       })
       .catch(() => {
         setMessages(prev => [
           ...prev,
           { sender: 'ai', text: 'Oops! Something went wrong, please try again.' },
         ]);
-      })
-      .finally(() => setIsTyping(false));
+        setIsTyping(false);
+      });
+  };
+
+  const typeAiMessage = (fullText) => {
+    let index = 0;
+    let currentText = '';
+    const typingSpeed = 5; // milliseconds per character
+
+    const type = () => {
+      if (index < fullText.length) {
+        currentText += fullText[index];
+        setMessages(prev => {
+          const updated = [...prev];
+          if (updated[updated.length - 1]?.sender === 'ai-temp') {
+            updated[updated.length - 1].text = currentText;
+          } else {
+            updated.push({ sender: 'ai-temp', text: currentText });
+          }
+          return updated;
+        });
+        index++;
+        setTimeout(type, typingSpeed);
+      } else {
+        // Replace temp with final AI message
+        setMessages(prev => {
+          const updated = [...prev];
+          updated[updated.length - 1] = { sender: 'ai', text: fullText };
+          return updated;
+        });
+        setIsTyping(false);
+      }
+    };
+
+    type();
   };
 
   const handleKey = e => {
@@ -82,12 +116,13 @@ function Chatbot() {
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
       position: relative;
       display: flex;
-      align-items: center;
+      align-items: left;
     }
     .ai-bubble {
       align-self: flex-start;
       background-color: #fff;
       color: #333;
+      text-align: left;
     }
     .user-bubble {
       align-self: flex-end;
@@ -174,19 +209,49 @@ function Chatbot() {
     }
   `;
 
+  // console.log()
+
+ 
+if (messages.length > 10 && !hasSentActivityCheck.current) {
+  hasSentActivityCheck.current = true; // set flag to true so it won't send again
+
+  const lastFiveUserMessages = messages
+    .filter(msg => msg.sender === 'user')
+    .slice(-5)
+    .map(msg => msg.text)
+    .join('\n');
+
+  console.log('Sending last 5 user messages:', lastFiveUserMessages);
+
+  axios
+    .get('http://127.0.0.1:8000/checkactivities', {
+      params: {
+        messages: lastFiveUserMessages,
+        id: JSON.parse(sessionStorage.getItem("userdetails")).id
+      }
+    })
+    .then(res => {
+      console.log(res);
+    })
+    .catch(e => {
+      console.log(e);
+    });
+  }
+ 
   return (
     <>
       <style>{styles}</style>
       <center>
         <div className="chat-container" style={{ width: '800px' }}>
-          
           <div className="chat-messages">
             {messages.map((msg, i) => (
-              <div key={i} className={`bubble ${msg.sender === 'ai' ? 'ai-bubble' : 'user-bubble'}`}>
+              <div key={i} className={`bubble ${(msg.sender === 'ai' || msg.sender === 'ai-temp') ? 'ai-bubble' : 'user-bubble'}`}>
                 <div className="bubble-icon">
-                  {msg.sender === 'ai' ? <FaRobot /> : <FaUser />}
+                  {msg.sender === 'ai' || msg.sender === 'ai-temp' ? <FaRobot /> : <FaUser />}
                 </div>
-                <div>{msg.text}</div>
+                <div>
+                  <ReactMarkdown>{msg.text}</ReactMarkdown>
+                </div>
               </div>
             ))}
             {isTyping && (

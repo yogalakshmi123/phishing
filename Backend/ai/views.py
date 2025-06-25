@@ -2,78 +2,15 @@ from django.http import JsonResponse
 import logging
 from . models import Useform
 # import google.generativeai as genai
-import requests
+# import requests
 import re
 import json
+from groq import Groq
 
 
-WATSONX_API_URL = "https://us-south.ml.cloud.ibm.com/ml/v1/text/generation?version=2023-05-29"
-MODEL_ID = "meta-llama/llama-3-3-70b-instruct"
-PROJECT_ID = "4152f31e-6a49-40aa-9b62-0ecf629aae42"
-API_KEY = "KS5iR_XHOYc4N_xoId6YcXFjZR2ikINRdAyc2w2o18Oo"
-
-
-
-def GetAccesstoken():
-    auth_url = "https://iam.cloud.ibm.com/identity/token"
-    
-    headers = {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "Accept": "application/json"
-    }
-    
-    data = {
-        "grant_type": "urn:ibm:params:oauth:grant-type:apikey",
-        "apikey": API_KEY
-    }
-    response = requests.post(auth_url, headers=headers, data=data)
-    
-    if response.status_code != 200:
-       
-        return None
-    else:
-        token_info = response.json()
-        return token_info['access_token']
-
-
-def generatePrompt(json_datas):
-    body = {
-        "input": f"""
-
-        you area syberseurity expert
-        Answer this question 
-        quetion:{json_datas}
-         
-         """, 
-        "parameters": {
-            "decoding_method": "greedy",
-            "max_new_tokens": 8100,
-            "min_new_tokens": 0,
-            "stop_sequences": [";"],
-            "repetition_penalty": 1.05,
-            "temperature": 0.5
-        },
-        "model_id": MODEL_ID,
-        "project_id": PROJECT_ID
-    }
-    
-    headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {GetAccesstoken()}"
-    }
-    
-    if not headers["Authorization"]:
-        return "Error: No valid access token."
-    
-    response = requests.post(WATSONX_API_URL, headers=headers, json=body)
-    
-    if response.status_code != 200:
-        
-        return "Error generating prompt"
-    # st.write(json_datas)
-    return response.json()['results'][0]['generated_text'].strip()
-
+client = Groq(
+    api_key="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",
+)
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -82,11 +19,23 @@ def AI(request):
     try:
         message = request.GET.get('message', '').strip()
         
-        response = generatePrompt(message)
+        chat_completion = client.chat.completions.create(
+        messages=[
+            {
+                "role": "user",
+                "content": f"""
+                Answer this question in simple words: {message}. Use markdown formatting like **bold**, *italic*,Use line breaks after colons (`:`) and lists if helpful.  
+                """,
+            }
+        ],
+        model="llama-3.3-70b-versatile",
+        stream=False,
+)
+
         
        
         return JsonResponse({
-            'message': response,
+            'message': chat_completion.choices[0].message.content,
             'status': 'success'
         })
         
@@ -168,38 +117,57 @@ def Analysis(request):
     users = Useform.objects.all().values()  # Get all fields as dictionaries
     return JsonResponse(list(users), safe=False)
 
-# def Checkactivities(request):
-#     if request.method == "GET":
-#         id = request.GET.get('id', '').strip()
-#         messages = request.GET.get('messages', '').strip()
-#         genai.configure(api_key="AIzaSyCJQDpGvKX2nurvrkhliM_T4jQb1Vfu4y4")
-#         model = genai.GenerativeModel("gemini-1.5-flash")
-#         prompt =  f""" Check human factor to analysis for fear, urgency, pressure using this message {messages} and return as json 
-#                     i need only json string for json loads no need explanation or code block or any other
-#                         {{
-#                             "fear":1 - 5,
-#                             "urgency":1 - 5,
-#                             "pressure":1 - 5
-#                         }}
-#                     """
-#         response = model.generate_content(prompt)
-
-#         raw = response.text.strip()
-#         if raw.startswith("```"):
-#             raw = re.sub(r"```(?:json)?\s*([\s\S]*?)\s*```", r"\1", raw).strip()
-
-#         try:
-#             data = json.loads(raw)
-#             user = Useform.objects.get(id=id)
-#             user.fear = data['fear']
-#             user.urgency = data['urgency']
-#             user.pressure = data['pressure']
-#             user.save()
-#             return JsonResponse({'message': 'User updated successfully', 'id': id})
+def Checkactivities(request):
+    try:
+        if request.method == "GET":
+            id = request.GET.get('id', '').strip()
+            messages = request.GET.get('messages', '').strip()
             
-#         except json.JSONDecodeError as e:
-#            print(e)
-#            return JsonResponse({'error': 'Invalid JSON'})
+            prompt = f"""
+                    Analyze the following message for human emotional factors: fear, urgency, and pressure.
+
+                    Respond ONLY with a raw JSON object, no explanation, no markdown formatting, no code blocks.
+
+                    Message:
+                    \"\"\"
+                    {messages}
+                    \"\"\"
+
+                    Return this format exactly:
+                    {{
+                    "fear": <1 to 5>,
+                    "urgency": <1 to 5>,
+                    "pressure": <1 to 5>
+                    }}
+            """
+
+            chat_completion = client.chat.completions.create(
+            messages=[
+                {
+                    "role": "user",
+                    "content": prompt,
+                }
+            ],
+            model="llama-3.3-70b-versatile",
+            stream=False,
+    )
+            print(chat_completion.choices[0].message.content)
+            print("user details")
+            data = json.loads(chat_completion.choices[0].message.content)
+            user = Useform.objects.get(id=id)
+            user.fear = data['fear']
+            user.urgency = data['urgency']
+            user.pressure = data['pressure']
+            user.save()
+            # print(chat_completion.choices[0].message.content)
+        return JsonResponse({'message': 'User updated successfully', 'id': id})
+        
+    
+    except Exception as e:
+        
+        return JsonResponse({"error": str(e)}, status=404)
+
+        
         
 
     
